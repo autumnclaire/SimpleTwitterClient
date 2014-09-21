@@ -22,6 +22,12 @@ import com.loopj.android.http.RequestParams;
  * 
  */
 public class TwitterClient extends OAuthBaseClient {
+	private static final String STATUSES_UPDATE_JSON = "statuses/update.json";
+	private static final String STATUSES_HOME_TIMELINE_JSON = "statuses/home_timeline.json";
+	private static final String DEFAULT_COUNT = "25";
+	private static final String COUNT = "count";
+	private static final String MAX_ID = "max_id";
+	private static final String STATUS = "status";
 	public static final Class<? extends Api> REST_API_CLASS = TwitterApi.class;
 	public static final String REST_URL = "https://api.twitter.com/1.1";
 	public static final String REST_CONSUMER_KEY = "jMQAqAoKjbJ2Jayfbj3RNbQ7V";
@@ -33,39 +39,20 @@ public class TwitterClient extends OAuthBaseClient {
 	}
 	
 	public void postNewTweet(AsyncHttpResponseHandler handler, String tweet) {
-		String apiUrl = getApiUrl("statuses/update.json");
+		String apiUrl = getApiUrl(STATUSES_UPDATE_JSON);
 		RequestParams params = new RequestParams();
-		params.put("status", tweet);
+		params.put(STATUS, tweet);
 		client.post(apiUrl,  params, handler);
 	}
 	
 	public void getHomeTimeline(AsyncHttpResponseHandler handler, long lastId) {
-		String apiUrl = getApiUrl("statuses/home_timeline.json");
+		String apiUrl = getApiUrl(STATUSES_HOME_TIMELINE_JSON);
 		RequestParams params = new RequestParams();
 		if (lastId > 0) {
-			params.put("max_id", String.valueOf(lastId-1));
+			params.put(MAX_ID, String.valueOf(lastId-1));
 
 		}
-		params.put("count", "25");//TODO change this to 25
+		params.put(COUNT, DEFAULT_COUNT);
 		client.get(apiUrl, params, handler);
 	}
-
-	// CHANGE THIS
-	// DEFINE METHODS for different API endpoints here
-//	public void getInterestingnessList(AsyncHttpResponseHandler handler) {
-//		String apiUrl = getApiUrl("?nojsoncallback=1&method=flickr.interestingness.getList");
-//		// Can specify query string params directly or through RequestParams.
-//		RequestParams params = new RequestParams();
-//		params.put("format", "json");
-//		client.get(apiUrl, params, handler);
-//	}
-
-	/* 1. Define the endpoint URL with getApiUrl and pass a relative path to the endpoint
-	 * 	  i.e getApiUrl("statuses/home_timeline.json");
-	 * 2. Define the parameters to pass to the request (query or body)
-	 *    i.e RequestParams params = new RequestParams("foo", "bar");
-	 * 3. Define the request method and make a call to the client
-	 *    i.e client.get(apiUrl, params, handler);
-	 *    i.e client.post(apiUrl, params, handler);
-	 */
 }

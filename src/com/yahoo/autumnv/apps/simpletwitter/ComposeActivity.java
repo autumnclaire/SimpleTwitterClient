@@ -32,7 +32,7 @@ public class ComposeActivity extends Activity {
 			public void onSuccess(JSONObject json) {
 				tweet = Tweet.fromJson(json);
 				Intent i = new Intent();
-				i.putExtra("tweet", tweet);
+				i.putExtra(Tweet.TWEET_KEY, tweet);
 				setResult(RESULT_OK, i);
 				finish();
 			}

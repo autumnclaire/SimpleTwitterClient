@@ -115,7 +115,7 @@ public class TimelineActivity extends Activity {
 			
 			@Override
 			public void onFailure(Throwable e, String s) {
-				Toast.makeText(parentContext, "Failed to get data, loading from DB", Toast.LENGTH_SHORT).show();
+				Toast.makeText(parentContext, "Failed to get data from Twitter, loading from DB", Toast.LENGTH_SHORT).show();
 				loadFromDb();
 			}
 		}, itemId);
@@ -126,7 +126,7 @@ public class TimelineActivity extends Activity {
 		aTweets.addAll(retrievedTweets);
 		lastItemId = tweets.get(tweets.size()-1).getUid();
 		swipeContainer.setRefreshing(false);
-		Toast.makeText(this, "got offline data", Toast.LENGTH_SHORT).show();
+		Toast.makeText(this, "Retrieved offline data from DB", Toast.LENGTH_SHORT).show();
 	}
 
 	public void onComposeAction(MenuItem item) {
@@ -136,10 +136,8 @@ public class TimelineActivity extends Activity {
 	
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-	  // REQUEST_CODE is defined above
 	  if (resultCode == RESULT_OK && requestCode == REQUEST_CODE) {
-	     // Extract name value from result extras
-	     Tweet tweet = (Tweet) data.getSerializableExtra("tweet");
+	     Tweet tweet = (Tweet) data.getSerializableExtra(Tweet.TWEET_KEY);
 	     if (tweet != null) {
 	    	 aTweets.insert(tweet, 0);
 	     }

@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.View;
+import android.widget.Toast;
 
 import com.codepath.oauth.OAuthLoginActivity;
 
@@ -35,7 +36,7 @@ public class LoginActivity extends OAuthLoginActivity<TwitterClient> {
 	// i.e Display an error dialog or toast
 	@Override
 	public void onLoginFailure(Exception e) {
-		e.printStackTrace();
+		Toast.makeText(this, "Login Failed!", Toast.LENGTH_SHORT).show();
 	}
 
 	// Click handler method for the button used to start OAuth flow

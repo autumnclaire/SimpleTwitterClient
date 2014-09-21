@@ -12,21 +12,27 @@ import com.activeandroid.annotation.Table;
 
 @Table(name = "users")
 public class User extends Model implements Serializable{
+	private static final String PROFILE_IMAGE_URL = "profile_image_url";
+	private static final String SCREEN_NAME = "screen_name";
+	private static final String ID = "id";
+	private static final String NAME = "name";
+
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 2585053043423912775L;
 	
+	//we want this to be unique, but I'm getting wierd errors without it, so leaving it this way so that the tweets show up.
     @Column(name = "uid")//, unique = true, onUniqueConflict = Column.ConflictAction.REPLACE)
 	private long uid;
     
-    @Column(name = "name")
+    @Column(name = NAME)
 	private String name;
     
-    @Column(name = "screen_name")
+    @Column(name = SCREEN_NAME)
 	private String screenName;
     
-    @Column(name = "profile_image_url")
+    @Column(name = PROFILE_IMAGE_URL)
 	private String profileImageUrl;
 	
 	public User() {
@@ -41,10 +47,10 @@ public class User extends Model implements Serializable{
 	public static User fromJson(JSONObject jsonObject) {
 		User u = new User();
 		try {
-			u.name = jsonObject.getString("name");
-			u.uid = jsonObject.getLong("id");
-			u.screenName = jsonObject.getString("screen_name");
-			u.profileImageUrl = jsonObject.getString("profile_image_url");
+			u.name = jsonObject.getString(NAME);
+			u.uid = jsonObject.getLong(ID);
+			u.screenName = jsonObject.getString(SCREEN_NAME);
+			u.profileImageUrl = jsonObject.getString(PROFILE_IMAGE_URL);
 		} catch (JSONException e) {
 			e.printStackTrace();
 			return null;
@@ -53,14 +59,6 @@ public class User extends Model implements Serializable{
 		return u;
 	}
 	
-//	public static List<User> getAll(long uid) {
-//        // This is how you execute a query
-//        return new Select()
-//          .from(User.class)
-//          .where("uid = ?", uid)
-//          .orderBy("name ASC")
-//          .execute();
-//    }
 
 	public String getName() {
 		return name;

@@ -1,17 +1,12 @@
 package com.yahoo.autumnv.apps.simpletwitter.models;
 
 import java.io.Serializable;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-
-import android.text.format.DateUtils;
 
 import com.activeandroid.Model;
 import com.activeandroid.annotation.Column;
@@ -21,6 +16,12 @@ import com.activeandroid.query.Select;
 
 @Table(name="tweets")
 public class Tweet extends Model implements Serializable{
+	private static final String USER = "user";
+	private static final String CREATED_AT = "created_at";
+	private static final String ID = "id";
+	private static final String TEXT = "text";
+
+	public static final String TWEET_KEY = "tweet";
 
 	private static final long serialVersionUID = -9096754268655800457L;
 	
@@ -33,7 +34,7 @@ public class Tweet extends Model implements Serializable{
     @Column(name = "createdAt")
 	private String createdAt;
     
-    @Column(name = "user", onUpdate=ForeignKeyAction.CASCADE, onDelete=ForeignKeyAction.CASCADE)
+    @Column(name = USER, onUpdate=ForeignKeyAction.CASCADE, onDelete=ForeignKeyAction.CASCADE)
 	private User user;
 	
 	public Tweet() {
@@ -87,10 +88,10 @@ public class Tweet extends Model implements Serializable{
 		Tweet tweet = new Tweet();
 		//extract values from JSON to populate the member variables
 		try {
-			tweet.body = jsonObject.getString("text");
-			tweet.uid = jsonObject.getLong("id");
-			tweet.createdAt = getRelativeTimeAgo(jsonObject.getString("created_at"));
-			tweet.user = User.fromJson(jsonObject.getJSONObject("user"));
+			tweet.body = jsonObject.getString(TEXT);
+			tweet.uid = jsonObject.getLong(ID);
+			tweet.createdAt = jsonObject.getString(CREATED_AT);
+			tweet.user = User.fromJson(jsonObject.getJSONObject(USER));
 		} catch (JSONException e) {
 			e.printStackTrace();
 			return null;
@@ -99,31 +100,12 @@ public class Tweet extends Model implements Serializable{
 	}
 	
 	public static List<Tweet> getAll() {
-        // This is how you execute a query
         return new Select()
           .all()
           .from(Tweet.class)
           .orderBy("uid DESC")
           .execute();
     }
-	
-	// getRelativeTimeAgo("Mon Apr 01 21:16:23 +0000 2014");
-	public static String getRelativeTimeAgo(String rawJsonDate) {
-		String twitterFormat = "EEE MMM dd HH:mm:ss ZZZZZ yyyy";
-		SimpleDateFormat sf = new SimpleDateFormat(twitterFormat, Locale.ENGLISH);
-		sf.setLenient(true);
-	 
-		String relativeDate = "";
-		try {
-			long dateMillis = sf.parse(rawJsonDate).getTime();
-			relativeDate = DateUtils.getRelativeTimeSpanString(dateMillis,
-					System.currentTimeMillis(), DateUtils.SECOND_IN_MILLIS).toString();
-		} catch (ParseException e) {
-			e.printStackTrace();
-		}
-	 
-		return relativeDate;
-	}
 
 	public static void saveTweets(List<Tweet> retrievedTweets) {
 		for (Tweet t : retrievedTweets) {
