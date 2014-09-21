@@ -13,16 +13,33 @@ import org.json.JSONObject;
 
 import android.text.format.DateUtils;
 
-public class Tweet implements Serializable{
-	/**
-	 * 
-	 */
+import com.activeandroid.Model;
+import com.activeandroid.annotation.Column;
+import com.activeandroid.annotation.Column.ForeignKeyAction;
+import com.activeandroid.annotation.Table;
+import com.activeandroid.query.Select;
+
+@Table(name="tweets")
+public class Tweet extends Model implements Serializable{
+
 	private static final long serialVersionUID = -9096754268655800457L;
-	private String body;
+	
+	@Column(name = "uid", unique = true, onUniqueConflict = Column.ConflictAction.REPLACE)
 	private long uid;
+	
+    @Column(name = "body")
+	private String body;
+    
+    @Column(name = "createdAt")
 	private String createdAt;
+    
+    @Column(name = "user", onUpdate=ForeignKeyAction.CASCADE, onDelete=ForeignKeyAction.CASCADE)
 	private User user;
 	
+	public Tweet() {
+		super();
+	}
+
 	public String getBody() {
 		return body;
 	}
@@ -81,6 +98,15 @@ public class Tweet implements Serializable{
 		return tweet;
 	}
 	
+	public static List<Tweet> getAll() {
+        // This is how you execute a query
+        return new Select()
+          .all()
+          .from(Tweet.class)
+          .orderBy("uid DESC")
+          .execute();
+    }
+	
 	// getRelativeTimeAgo("Mon Apr 01 21:16:23 +0000 2014");
 	public static String getRelativeTimeAgo(String rawJsonDate) {
 		String twitterFormat = "EEE MMM dd HH:mm:ss ZZZZZ yyyy";
@@ -97,6 +123,13 @@ public class Tweet implements Serializable{
 		}
 	 
 		return relativeDate;
+	}
+
+	public static void saveTweets(List<Tweet> retrievedTweets) {
+		for (Tweet t : retrievedTweets) {
+			t.getUser().save();
+			t.save();
+		}
 	}
 	
 }

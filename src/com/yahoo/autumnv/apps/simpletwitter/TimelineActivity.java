@@ -6,15 +6,18 @@ import java.util.List;
 import org.json.JSONArray;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v4.widget.SwipeRefreshLayout.OnRefreshListener;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import com.loopj.android.http.JsonHttpResponseHandler;
 import com.yahoo.autumnv.apps.simpletwitter.models.Tweet;
@@ -46,12 +49,15 @@ public class TimelineActivity extends Activity {
 		lvTweets = (ListView)findViewById(R.id.lvTweets);
 		tweets = new ArrayList<>();
 		aTweets = new TweetArrayAdapter(this, tweets);
-		lvTweets.setAdapter(aTweets);
-		
+		lvTweets.setAdapter(aTweets);		
 		setupEndlessScroll();
 		setupPullToRefresh();
 		populateTimeline(0);
 
+	}
+
+	private void loadFromDb() {
+		this.tweets = Tweet.getAll();
 	}
 
 	private void setupEndlessScroll() {
@@ -86,6 +92,13 @@ public class TimelineActivity extends Activity {
 
 
 	public void populateTimeline(final long itemId) {
+		if (!isNetworkAvailable()) {
+			if (itemId == 0) {
+				populateTimelineOffline();
+			}
+			return;
+		}
+		final TimelineActivity parentContext = this;
 		client.getHomeTimeline(new JsonHttpResponseHandler() {
 			
 			@Override
@@ -93,26 +106,31 @@ public class TimelineActivity extends Activity {
 				if (itemId == 0) {
 					aTweets.clear();
 				}
-				aTweets.addAll(Tweet.fromJson(json));
+				List<Tweet> retrievedTweets = Tweet.fromJson(json);
+				aTweets.addAll(retrievedTweets);
 				lastItemId = aTweets.getItem(aTweets.getCount()-1).getUid();
                 swipeContainer.setRefreshing(false);
+                Tweet.saveTweets(retrievedTweets);
 			}
 			
 			@Override
 			public void onFailure(Throwable e, String s) {
-				Log.d("debug", e.toString());
-				Log.d("debug", s.toString());
+				Toast.makeText(parentContext, "Failed to get data, loading from DB", Toast.LENGTH_SHORT).show();
+				loadFromDb();
 			}
 		}, itemId);
 	}
 	
+	private void populateTimelineOffline() {
+		List<Tweet> retrievedTweets = Tweet.getAll();
+		aTweets.addAll(retrievedTweets);
+		lastItemId = tweets.get(tweets.size()-1).getUid();
+		swipeContainer.setRefreshing(false);
+		Toast.makeText(this, "got offline data", Toast.LENGTH_SHORT).show();
+	}
+
 	public void onComposeAction(MenuItem item) {
-//    	Toast.makeText(this, "Settings icon clicked", Toast.LENGTH_SHORT).show();
-    	//Create Intent
     	Intent i = new Intent(this, ComposeActivity.class);
-		//pass any arguments
-    	
-    	//execute Intent startActivityForResult
     	startActivityForResult(i, REQUEST_CODE);
 	}
 	
@@ -127,5 +145,12 @@ public class TimelineActivity extends Activity {
 	     }
 	  }
 	}
+	
+    private Boolean isNetworkAvailable() {
+        ConnectivityManager connectivityManager 
+              = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
+        return activeNetworkInfo != null && activeNetworkInfo.isConnectedOrConnecting();
+    }
 	
 }

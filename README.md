@@ -21,4 +21,4 @@ A simple client that displays tweets and allows the user to post new tweets.
 - **Required** User should be taken back to home timeline with new tweet visible
 - **Optional** Links in tweets are clickable and viewable
 - **Optional** User can refresh tweets timeline by pulling down to refresh
-
+- **Optional** User can open the twitter app offline and see last loaded tweets.  Tweets are persisted into sqlite and can be displayed from the local DB
