@@ -2,7 +2,7 @@
 
 ## Details
 - **Author** Autumn Victor
-- **Time Spent** TBD
+- **Time Spent** 5 hours on required, 4 hours on optionals, cleanup, and walkthrough
 
 ## Simple Twitter Client
 
