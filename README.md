@@ -19,3 +19,6 @@ A simple client that displays tweets and allows the user to post new tweets.
 - **Required** User will have a Compose view opened
 - **Required** User can enter a message and hit a button to post to twitter
 - **Required** User should be taken back to home timeline with new tweet visible
+- **Optional** Links in tweets are clickable and viewable
+- **Optional** User can refresh tweets timeline by pulling down to refresh
+

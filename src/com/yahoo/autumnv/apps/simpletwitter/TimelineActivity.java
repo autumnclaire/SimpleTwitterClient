@@ -8,6 +8,8 @@ import org.json.JSONArray;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v4.widget.SwipeRefreshLayout;
+import android.support.v4.widget.SwipeRefreshLayout.OnRefreshListener;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -17,6 +19,7 @@ import android.widget.ListView;
 import com.loopj.android.http.JsonHttpResponseHandler;
 import com.yahoo.autumnv.apps.simpletwitter.models.Tweet;
 
+
 public class TimelineActivity extends Activity {
 	private static final int REQUEST_CODE = 0;
 	private TwitterClient client;
@@ -24,6 +27,8 @@ public class TimelineActivity extends Activity {
 	private ArrayAdapter<Tweet> aTweets;
 	private ListView lvTweets;
 	private long lastItemId;
+	private SwipeRefreshLayout swipeContainer;
+
 	
 	@Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -38,29 +43,59 @@ public class TimelineActivity extends Activity {
 		setContentView(R.layout.activity_timeline);
 		client = TwitterApplication.getRestClient();
 		lastItemId = 0;
-		populateTimeline();
 		lvTweets = (ListView)findViewById(R.id.lvTweets);
 		tweets = new ArrayList<>();
 		aTweets = new TweetArrayAdapter(this, tweets);
 		lvTweets.setAdapter(aTweets);
 		
+		setupEndlessScroll();
+		setupPullToRefresh();
+		populateTimeline(0);
+
+	}
+
+	private void setupEndlessScroll() {
 		lvTweets.setOnScrollListener(new EndlessScrollListener() {
 			
 			@Override
 			public void onLoadMore(int page, int totalItemsCount) {
-				populateTimeline();
+				populateTimeline(lastItemId);
 			}
 		});
 	}
 
+	private void setupPullToRefresh() {
+		swipeContainer = (SwipeRefreshLayout) findViewById(R.id.swipeContainer);
+        // Setup refresh listener which triggers new data loading
+        swipeContainer.setOnRefreshListener(new OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                // Your code to refresh the list here.
+                // Make sure you call swipeContainer.setRefreshing(false)
+                // once the network request has completed successfully.
+            	
+                populateTimeline(0);
+            } 
+        });
+        // Configure the refreshing colors
+        swipeContainer.setColorScheme(android.R.color.holo_blue_bright, 
+                android.R.color.holo_green_light, 
+                android.R.color.holo_orange_light, 
+                android.R.color.holo_red_light);
+	}
 
-	public void populateTimeline() {
+
+	public void populateTimeline(final long itemId) {
 		client.getHomeTimeline(new JsonHttpResponseHandler() {
 			
 			@Override
 			public void onSuccess(JSONArray json) {
+				if (itemId == 0) {
+					aTweets.clear();
+				}
 				aTweets.addAll(Tweet.fromJson(json));
 				lastItemId = aTweets.getItem(aTweets.getCount()-1).getUid();
+                swipeContainer.setRefreshing(false);
 			}
 			
 			@Override
@@ -68,7 +103,7 @@ public class TimelineActivity extends Activity {
 				Log.d("debug", e.toString());
 				Log.d("debug", s.toString());
 			}
-		}, lastItemId);
+		}, itemId);
 	}
 	
 	public void onComposeAction(MenuItem item) {
