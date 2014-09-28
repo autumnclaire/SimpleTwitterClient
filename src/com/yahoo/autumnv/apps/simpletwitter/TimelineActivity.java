@@ -1,154 +1,80 @@
 package com.yahoo.autumnv.apps.simpletwitter;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import org.json.JSONArray;
-
-import android.app.Activity;
-import android.content.Context;
+import android.app.ActionBar;
+import android.app.ActionBar.Tab;
 import android.content.Intent;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
 import android.os.Bundle;
-import android.support.v4.widget.SwipeRefreshLayout;
-import android.support.v4.widget.SwipeRefreshLayout.OnRefreshListener;
+import android.support.v4.app.FragmentActivity;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.ArrayAdapter;
-import android.widget.ListView;
-import android.widget.Toast;
 
-import com.loopj.android.http.JsonHttpResponseHandler;
-import com.yahoo.autumnv.apps.simpletwitter.models.Tweet;
+import com.yahoo.autumnv.apps.simpletwitter.fragments.HomeTimeLineFragment;
+import com.yahoo.autumnv.apps.simpletwitter.fragments.MentionsTimeLineFragment;
+import com.yahoo.autumnv.apps.simpletwitter.listeners.FragmentTabListener;
 
 
-public class TimelineActivity extends Activity {
-	private static final int REQUEST_CODE = 0;
-	private TwitterClient client;
-	private List<Tweet> tweets;
-	private ArrayAdapter<Tweet> aTweets;
-	private ListView lvTweets;
-	private long lastItemId;
-	private SwipeRefreshLayout swipeContainer;
+public class TimelineActivity extends FragmentActivity {
 
-	
-	@Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.compose, menu);
-        return true;
-    }
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_timeline);
-		client = TwitterApplication.getRestClient();
-		lastItemId = 0;
-		lvTweets = (ListView)findViewById(R.id.lvTweets);
-		tweets = new ArrayList<>();
-		aTweets = new TweetArrayAdapter(this, tweets);
-		lvTweets.setAdapter(aTweets);		
-		setupEndlessScroll();
-		setupPullToRefresh();
-		populateTimeline(0);
-
-	}
-
-	private void loadFromDb() {
-		this.tweets = Tweet.getAll();
-	}
-
-	private void setupEndlessScroll() {
-		lvTweets.setOnScrollListener(new EndlessScrollListener() {
-			
-			@Override
-			public void onLoadMore(int page, int totalItemsCount) {
-				populateTimeline(lastItemId);
-			}
-		});
-	}
-
-	private void setupPullToRefresh() {
-		swipeContainer = (SwipeRefreshLayout) findViewById(R.id.swipeContainer);
-        // Setup refresh listener which triggers new data loading
-        swipeContainer.setOnRefreshListener(new OnRefreshListener() {
-            @Override
-            public void onRefresh() {
-                // Your code to refresh the list here.
-                // Make sure you call swipeContainer.setRefreshing(false)
-                // once the network request has completed successfully.
-            	
-                populateTimeline(0);
-            } 
-        });
-        // Configure the refreshing colors
-        swipeContainer.setColorScheme(android.R.color.holo_blue_bright, 
-                android.R.color.holo_green_light, 
-                android.R.color.holo_orange_light, 
-                android.R.color.holo_red_light);
-	}
-
-
-	public void populateTimeline(final long itemId) {
-		if (!isNetworkAvailable()) {
-			if (itemId == 0) {
-				populateTimelineOffline();
-			}
-			return;
-		}
-		final TimelineActivity parentContext = this;
-		client.getHomeTimeline(new JsonHttpResponseHandler() {
-			
-			@Override
-			public void onSuccess(JSONArray json) {
-				if (itemId == 0) {
-					aTweets.clear();
-				}
-				List<Tweet> retrievedTweets = Tweet.fromJson(json);
-				aTweets.addAll(retrievedTweets);
-				lastItemId = aTweets.getItem(aTweets.getCount()-1).getUid();
-                swipeContainer.setRefreshing(false);
-                Tweet.saveTweets(retrievedTweets);
-			}
-			
-			@Override
-			public void onFailure(Throwable e, String s) {
-				Toast.makeText(parentContext, "Failed to get data from Twitter, loading from DB", Toast.LENGTH_SHORT).show();
-				loadFromDb();
-			}
-		}, itemId);
-	}
-	
-	private void populateTimelineOffline() {
-		List<Tweet> retrievedTweets = Tweet.getAll();
-		aTweets.addAll(retrievedTweets);
-		lastItemId = tweets.get(tweets.size()-1).getUid();
-		swipeContainer.setRefreshing(false);
-		Toast.makeText(this, "Retrieved offline data from DB", Toast.LENGTH_SHORT).show();
-	}
-
-	public void onComposeAction(MenuItem item) {
-    	Intent i = new Intent(this, ComposeActivity.class);
-    	startActivityForResult(i, REQUEST_CODE);
+        setupTabs();
 	}
 	
 	@Override
-	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-	  if (resultCode == RESULT_OK && requestCode == REQUEST_CODE) {
-	     Tweet tweet = (Tweet) data.getSerializableExtra(Tweet.TWEET_KEY);
-	     if (tweet != null) {
-	    	 aTweets.insert(tweet, 0);
-	     }
-	  }
-	}
-	
-    private Boolean isNetworkAvailable() {
-        ConnectivityManager connectivityManager 
-              = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
-        NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
-        return activeNetworkInfo != null && activeNetworkInfo.isConnectedOrConnecting();
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        getMenuInflater().inflate(R.menu.menu_timeline, menu);
+        return true;
     }
 	
+	@Override
+	public void onActivityResult(int requestCode, int resultCode, Intent data) {
+		if (resultCode == RESULT_OK && requestCode == ComposeActivity.REQUEST_CODE) {
+			((HomeTimeLineFragment)getFragmentManager().findFragmentByTag("home")).handleIntentData(data);
+		}
+	}
+
+	public void onComposeAction(MenuItem item) {
+		Intent i = new Intent(this, ComposeActivity.class);
+		startActivityForResult(i, ComposeActivity.REQUEST_CODE);
+	}
+	
+	public void onProfileView(MenuItem item) {
+		Intent i = new Intent(this, ProfileActivity.class);
+		startActivity(i);
+		
+	}
+	
+	private void setupTabs() {
+		ActionBar actionBar = getActionBar();
+		actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
+		actionBar.setDisplayShowTitleEnabled(true);
+
+		Tab tab1 = actionBar
+			.newTab()
+			.setText("Home")
+			.setIcon(R.drawable.ic_home)
+			.setTag("HomeTimeLineFragment")
+			.setTabListener(
+				new FragmentTabListener<HomeTimeLineFragment>(R.id.flContainer, this, "home",
+						HomeTimeLineFragment.class));
+
+		actionBar.addTab(tab1);
+		actionBar.selectTab(tab1);
+
+		Tab tab2 = actionBar
+			.newTab()
+			.setText("Mentions")
+			.setIcon(R.drawable.ic_mentions)
+			.setTag("MentionsTimeLineFragment")
+			.setTabListener(
+			    new FragmentTabListener<MentionsTimeLineFragment>(R.id.flContainer, this, "mentions",
+			    		MentionsTimeLineFragment.class));
+
+		actionBar.addTab(tab2);
+	}
+
 }

@@ -12,6 +12,9 @@ import com.activeandroid.annotation.Table;
 
 @Table(name = "users")
 public class User extends Model implements Serializable{
+	private static final String DESCRIPTION2 = "description";
+	private static final String FOLLOWERS_COUNT = "followers_count";
+	private static final String FRIENDS_COUNT = "friends_count";
 	private static final String PROFILE_IMAGE_URL = "profile_image_url";
 	private static final String SCREEN_NAME = "screen_name";
 	private static final String ID = "id";
@@ -34,7 +37,17 @@ public class User extends Model implements Serializable{
     
     @Column(name = PROFILE_IMAGE_URL)
 	private String profileImageUrl;
-	
+    
+    @Column(name = FOLLOWERS_COUNT)
+    private int followersCount;
+
+    @Column(name = FRIENDS_COUNT)
+    private int friendsCount;
+    
+    @Column(name = DESCRIPTION2)
+    private String description;
+
+    
 	public User() {
 		super();
 	}
@@ -51,6 +64,9 @@ public class User extends Model implements Serializable{
 			u.uid = jsonObject.getLong(ID);
 			u.screenName = jsonObject.getString(SCREEN_NAME);
 			u.profileImageUrl = jsonObject.getString(PROFILE_IMAGE_URL);
+			u.followersCount = jsonObject.getInt(FOLLOWERS_COUNT);
+			u.friendsCount = jsonObject.getInt(FRIENDS_COUNT);
+			u.description = jsonObject.getString(DESCRIPTION2);
 		} catch (JSONException e) {
 			e.printStackTrace();
 			return null;
@@ -75,5 +91,20 @@ public class User extends Model implements Serializable{
 	public String getProfileImageUrl() {
 		return profileImageUrl;
 	}
+
+	public int getFollowersCount() {
+		return followersCount;
+	}
+	
+
+	public int getFriendsCount() {
+		return friendsCount;
+	}
+	
+	public String getDescription() {
+		return description;
+	}
+
+	
 
 }
