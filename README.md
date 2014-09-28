@@ -35,7 +35,12 @@ A simple client that displays tweets and allows the user to post new tweets.
 - **Required** User can see picture, tagline, # of followers, # of following, and tweets of clicked user.
 - **Required** Profile view should include that user's timeline
 
+## Walkthrough Week 4
 
-## Walkthrough
+![Simple Twitter Client Demo Week 4](simple_twitter_demo_week4.gif "Simple Twitter Client Demo Week 4") 
 
-![Simple Twitter Client Demo](simple_twitter_demo.gif "Simple Twitter Client Demo") 
+
+## Walkthrough Week 3
+
+![Simple Twitter Client Demo Week 3](simple_twitter_demo.gif "Simple Twitter Client Demo Week 3") 
+
