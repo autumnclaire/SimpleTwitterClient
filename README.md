@@ -2,7 +2,8 @@
 
 ## Details
 - **Author** Autumn Victor
-- **Time Spent** 5 hours on required, 4 hours on optionals, cleanup, and walkthrough
+- **Time Spent** Week 3: 5 hours on required, 4 hours on optionals, cleanup, and walkthrough
+- **Time Spent** Week 4: 9 hours on required and walkthrough
 
 ## Simple Twitter Client
 
