@@ -14,6 +14,8 @@ import com.yahoo.autumnv.apps.simpletwitter.models.Tweet;
 public class ComposeActivity extends Activity {
 	private TwitterClient client;
 	private Tweet tweet;
+	public static final int REQUEST_CODE = 0;
+
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
