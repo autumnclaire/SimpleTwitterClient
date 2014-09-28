@@ -1,6 +1,10 @@
 package com.yahoo.autumnv.apps.simpletwitter.fragments;
 
+import com.yahoo.autumnv.apps.simpletwitter.models.User;
+
 public class UserTimelineFragment extends TweetsListFragment {
+
+	private User user;
 
 	@Override
 	protected void setLastItemId(long uid) {
@@ -16,7 +20,11 @@ public class UserTimelineFragment extends TweetsListFragment {
 
 	@Override
 	protected void getTimeline() {
-		getClient().getUserTimeline(getResponseHandler(getLastItemId(), this));		
+		getClient().getUserTimeline(getResponseHandler(getLastItemId(), this), user);		
+	}
+
+	public void setUser(User u) {
+		this.user = u;
 	}
 
 }

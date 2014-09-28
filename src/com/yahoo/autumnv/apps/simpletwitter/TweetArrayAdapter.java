@@ -6,9 +6,11 @@ import java.util.List;
 import java.util.Locale;
 
 import android.content.Context;
+import android.content.Intent;
 import android.text.format.DateUtils;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
@@ -44,6 +46,16 @@ public class TweetArrayAdapter extends ArrayAdapter<Tweet> {
 		User user = tweet.getUser();
 
 		setImage(ivProfileImage, user.getProfileImageUrl());
+		ivProfileImage.setTag(user);
+		ivProfileImage.setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				Intent i = new Intent(getContext(), ProfileActivity.class);
+				i.putExtra("user", (User)v.getTag());
+				getContext().startActivity(i);
+			}
+		});
 		tvUserName.setText(user.getScreenName());
 		tvBody.setText(tweet.getBody());
 		tvTimestamp.setText(getRelativeTimeAgo(tweet.getCreatedAt()));

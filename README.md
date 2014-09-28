@@ -8,7 +8,7 @@
 
 A simple client that displays tweets and allows the user to post new tweets.
 
-## User Stories
+## User Stories Week 3
 - **Required** User can sign in using OAuth login flow
 - **Required** User can view last 25 tweets from their home timeline
 - **Required** User should be able to see the user, body and timestamp for tweet
@@ -22,6 +22,19 @@ A simple client that displays tweets and allows the user to post new tweets.
 - **Optional** Links in tweets are clickable and viewable
 - **Optional** User can refresh tweets timeline by pulling down to refresh
 - **Optional** User can open the twitter app offline and see last loaded tweets.  Tweets are persisted into sqlite and can be displayed from the local DB
+
+## User Stories Week 4
+- **Required** Includes all required user stories from Week 3 Twitter Client
+- **Required** User can switch between Timeline and Mention views using tabs.
+- **Required** User can view their home timeline tweets.
+- **Required** User can view the recent mentions of their username.
+- **Required** User can scroll to bottom of either of these lists and new tweets will load ("infinite scroll")
+- **Required** User can navigate to view their own profile
+- **Required** User can see picture, tagline, # of followers, # of following, and tweets on their profile.
+- **Required** User can click on the profile image in any tweet to see another user's profile.
+- **Required** User can see picture, tagline, # of followers, # of following, and tweets of clicked user.
+- **Required** Profile view should include that user's timeline
+
 
 ## Walkthrough
 

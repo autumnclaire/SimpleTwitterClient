@@ -8,6 +8,7 @@ import android.content.Context;
 import com.codepath.oauth.OAuthBaseClient;
 import com.loopj.android.http.AsyncHttpResponseHandler;
 import com.loopj.android.http.RequestParams;
+import com.yahoo.autumnv.apps.simpletwitter.models.User;
 
 /*
  * 
@@ -62,9 +63,14 @@ public class TwitterClient extends OAuthBaseClient {
 		client.get(apiUrl, null, handler);
 	}
 	
-	public void getUserTimeline(AsyncHttpResponseHandler handler) {
+	public void getUserTimeline(AsyncHttpResponseHandler handler, User user) {
 		String apiUrl = getApiUrl(STATUSES_USER_TIMELINE_JSON);
-		client.get(apiUrl, null, handler);
+		RequestParams params = null;
+		if (user != null) {
+			params = new RequestParams();
+			params.put("screen_name", user.getScreenName());
+		}
+		client.get(apiUrl, params, handler);
 	}
 
 	private void getTimeline(AsyncHttpResponseHandler handler, long lastId,
@@ -77,4 +83,5 @@ public class TwitterClient extends OAuthBaseClient {
 		params.put(COUNT, DEFAULT_COUNT);
 		client.get(getApiUrl(apiUrl), params, handler);
 	}
+
 }
