@@ -1,9 +1,0 @@
-<menu xmlns:android="http://schemas.android.com/apk/res/android"
-xmlns:myapp="http://schemas.android.com/apk/res-auto">
-    <item
-        android:id="@+id/action_compose"
-        android:icon="@drawable/ic_action_compose"
-        myapp:showAsAction="ifRoom"
-        android:title="@string/action_compose"/>
-
-</menu>

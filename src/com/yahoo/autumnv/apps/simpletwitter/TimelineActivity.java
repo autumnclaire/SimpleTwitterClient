@@ -1,21 +1,19 @@
 package com.yahoo.autumnv.apps.simpletwitter;
 
+import android.app.ActionBar;
+import android.app.ActionBar.Tab;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.v7.app.ActionBar;
-import android.support.v7.app.ActionBar.Tab;
-import android.support.v7.app.ActionBarActivity;
+import android.support.v4.app.FragmentActivity;
 import android.view.Menu;
 import android.view.MenuItem;
 
 import com.yahoo.autumnv.apps.simpletwitter.fragments.HomeTimeLineFragment;
 import com.yahoo.autumnv.apps.simpletwitter.fragments.MentionsTimeLineFragment;
-import com.yahoo.autumnv.apps.simpletwitter.fragments.TweetsListFragment;
-import com.yahoo.autumnv.apps.simpletwitter.listeners.SupportFragmentTabListener;
+import com.yahoo.autumnv.apps.simpletwitter.listeners.FragmentTabListener;
 
 
-public class TimelineActivity extends ActionBarActivity {
-	private TweetsListFragment tweetsListFragment = null;
+public class TimelineActivity extends FragmentActivity {
 
 	
 	@Override
@@ -28,15 +26,14 @@ public class TimelineActivity extends ActionBarActivity {
 	@Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.compose, menu);
-        getMenuInflater().inflate(R.menu.tweets, menu);
+        getMenuInflater().inflate(R.menu.menu_timeline, menu);
         return true;
     }
 	
 	@Override
 	public void onActivityResult(int requestCode, int resultCode, Intent data) {
 		if (resultCode == RESULT_OK && requestCode == ComposeActivity.REQUEST_CODE) {
-			((HomeTimeLineFragment)getSupportFragmentManager().findFragmentByTag("HomeTimeLineFragment")).handleIntentData(data);
+			((HomeTimeLineFragment)getFragmentManager().findFragmentByTag("home")).handleIntentData(data);
 		}
 	}
 
@@ -52,7 +49,7 @@ public class TimelineActivity extends ActionBarActivity {
 	}
 	
 	private void setupTabs() {
-		ActionBar actionBar = getSupportActionBar();
+		ActionBar actionBar = getActionBar();
 		actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
 		actionBar.setDisplayShowTitleEnabled(true);
 
@@ -62,7 +59,7 @@ public class TimelineActivity extends ActionBarActivity {
 			.setIcon(R.drawable.ic_home)
 			.setTag("HomeTimeLineFragment")
 			.setTabListener(
-				new SupportFragmentTabListener<HomeTimeLineFragment>(R.id.flContainer, this, "home",
+				new FragmentTabListener<HomeTimeLineFragment>(R.id.flContainer, this, "home",
 						HomeTimeLineFragment.class));
 
 		actionBar.addTab(tab1);
@@ -74,7 +71,7 @@ public class TimelineActivity extends ActionBarActivity {
 			.setIcon(R.drawable.ic_mentions)
 			.setTag("MentionsTimeLineFragment")
 			.setTabListener(
-			    new SupportFragmentTabListener<MentionsTimeLineFragment>(R.id.flContainer, this, "mentions",
+			    new FragmentTabListener<MentionsTimeLineFragment>(R.id.flContainer, this, "mentions",
 			    		MentionsTimeLineFragment.class));
 
 		actionBar.addTab(tab2);

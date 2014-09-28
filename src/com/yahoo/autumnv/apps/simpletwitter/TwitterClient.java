@@ -25,6 +25,7 @@ public class TwitterClient extends OAuthBaseClient {
 	private static final String STATUSES_UPDATE_JSON = "statuses/update.json";
 	private static final String STATUSES_HOME_TIMELINE_JSON = "statuses/home_timeline.json";
 	private static final String STATUSES_MENTIONS_TIMELINE_JSON = "statuses/mentions_timeline.json";
+	private static final String STATUSES_USER_TIMELINE_JSON = "statuses/user_timeline.json";
 	private static final String DEFAULT_COUNT = "25";
 	private static final String COUNT = "count";
 	private static final String MAX_ID = "max_id";
@@ -34,6 +35,7 @@ public class TwitterClient extends OAuthBaseClient {
 	public static final String REST_CONSUMER_KEY = "jMQAqAoKjbJ2Jayfbj3RNbQ7V";
 	public static final String REST_CONSUMER_SECRET = "pqSJHsFBggdqJog5IPRbohSDMkP0lh0xYlDdlfSsQHwTq7RR5h";
 	public static final String REST_CALLBACK_URL = "oauth://cpsimpletweets";
+	private static final String ACCOUNT_VERIFY_CREDENTIALS = "account/verify_credentials.json";
 
 	public TwitterClient(Context context) {
 		super(context, REST_API_CLASS, REST_URL, REST_CONSUMER_KEY, REST_CONSUMER_SECRET, REST_CALLBACK_URL);
@@ -53,6 +55,16 @@ public class TwitterClient extends OAuthBaseClient {
 	public void getMentionsTimeline(
 			AsyncHttpResponseHandler handler, long lastId) {
 		getTimeline(handler, lastId, STATUSES_MENTIONS_TIMELINE_JSON);
+	}
+	
+	public void getMyInfo(AsyncHttpResponseHandler handler) {
+		String apiUrl = getApiUrl(ACCOUNT_VERIFY_CREDENTIALS);
+		client.get(apiUrl, null, handler);
+	}
+	
+	public void getUserTimeline(AsyncHttpResponseHandler handler) {
+		String apiUrl = getApiUrl(STATUSES_USER_TIMELINE_JSON);
+		client.get(apiUrl, null, handler);
 	}
 
 	private void getTimeline(AsyncHttpResponseHandler handler, long lastId,
